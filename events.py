@@ -48,9 +48,13 @@ class Battle(BaseEvent):
         self.player = player
         self.monster = monster
 
+    def print_skills(self):
+        for skill, skill_name in self.player.skills.items():
+            print(skill, "--", skill_name)
+
     def get_user_input(self):
         while True:
-            print("your pig has these skills: ", self.player.skills) # TODO: show better printed skills
+            self.print_skills()
             user_input = input(self.description).lower()
             if user_input in self.choices:
                 return self.choices[user_input]
@@ -76,13 +80,11 @@ class Battle(BaseEvent):
                 self.basic_fight(chosen_skill)
         if self.monster.is_alive() == False:
             print("you won the battle")
+            self.player.gain_exp(self.monster.exp)
             self.player.gold += self.monster.gold
-            self.player.exp += self.monster.exp
             print(
                 "Gained gold:", self.monster.gold, "and exp:", self.monster.gold
             )
-
-        # TODO: Add gain_exp and player_level_up after winning
 
 
 class EventOther(BaseEvent):
@@ -102,7 +104,7 @@ class EventOther(BaseEvent):
         result = self.get_user_input()
         if result:
             self.player.gold += self.gold
-            self.player.exp += self.exp
+            self.player.gain_exp(self.gold)
             print("Gained gold:", self.player.gold, "and exp:",self.player.exp)
 
 
@@ -123,29 +125,30 @@ def create_other_event(player, events=OTHER_EVENTS):
 def choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS):
     if not MONSTERS_DICT:
         return None
-    random_num = random.randint(0, (len(MONSTERS_DICT)-1))
-    random_monster = MONSTERS_DICT[random_num]
-    MONSTERS_DICT.pop(random_num)
-    random_descript = BATTLE_DESCRIPTS[random_num]
-    BATTLE_DESCRIPTS.pop(random_num)
+    # random_num = random.randint(0, (len(MONSTERS_DICT)-1))
+    chosen_monster = MONSTERS_DICT[0]
+    # random_monster = MONSTERS_DICT[random_num]
+    MONSTERS_DICT.pop(0)
+    chosen_descript = BATTLE_DESCRIPTS[0]
+    BATTLE_DESCRIPTS.pop(0)
     battle_event = Battle(
-        random_descript,
+        chosen_descript,
         player=player,
         monster=Monster(
-            name=random_monster["name"],
-            hp=random_monster["hp"],
-            dmg=random_monster["damage"],
-            exp=random_monster["exp"],
-            gold=random_monster["gold"]
+            name=chosen_monster["name"],
+            hp=chosen_monster["hp"],
+            dmg=chosen_monster["damage"],
+            exp=chosen_monster["exp"],
+            gold=chosen_monster["gold"]
         ),
-        exp=random_monster["exp"],
-        gold=random_monster["gold"]
+        exp=chosen_monster["exp"],
+        gold=chosen_monster["gold"]
     )
     return battle_event
 
 def create_random_event(player, BATTLE_DESCRIPTS, MONSTERS_DICT, events=OTHER_EVENTS):
-    battle_or_other_event = random.choice(["battle", "other_event"])
-    print("WYSZLO", battle_or_other_event)
+    battle_or_other_event = random.choice(["Battle", "Other_event"])
+    print(battle_or_other_event, "\n")
     if battle_or_other_event == "other_event":
         event = create_other_event(player, events=OTHER_EVENTS)
     else:

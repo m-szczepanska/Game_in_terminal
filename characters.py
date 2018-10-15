@@ -55,6 +55,16 @@ class Character():
             self.name, dmg_taken, self.hp[0], self.hp[1])
         )
 
+    def get_stats(self):
+        return str({
+            "Name: {}".format(self.name),
+            "Hit Points (hp): {}/{}".format(self.hp[0], self.hp[1]),
+            "Damage: {}-{}".format(self.dmg[0], self.dmg[1]),
+            "Experience: {}".format(self.exp),
+            "Gold: {}".format(self.gold),
+            "Level: {}".format(self.lvl)
+        })
+
 
 class Player(Character):
     # TODO: Add get_reward(self, event) method
@@ -76,6 +86,7 @@ class Player(Character):
             skill.player = self
             setattr(self, skill_name, skill)
 
+
     def gain_exp(self, exp):
         self.exp += exp
         print("You gain {} exp. You have {} exp now.".format(exp, self.exp))
@@ -85,12 +96,15 @@ class Player(Character):
         exp_to_level = 4 * self.lvl
         if self.exp >= exp_to_level:
             self.exp -= exp_to_level
-            self.dmg += 3
+            self.dmg[1] += 3
             self.lvl += 1
             self.hp[1] += 10
             self.hp[0] = self.hp[1]
             print("Level up! You can deal to {} damage now!".format(self.dmg[1]))
             self.get_stats()
+        else:
+            lack_of = exp_to_level - self.exp
+            print(f"{lack_of} exp points to next level")
 
 
 class Monster(Character):

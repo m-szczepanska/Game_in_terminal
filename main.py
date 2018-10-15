@@ -14,23 +14,23 @@ class Skill:
 
 
 class Run(Skill):
-    name = 'run'
+    name = 'Run'
 
     def __repr__(self):
-        return "Run"
+        return 'Run away from the battle'
 
     def __call__(self):
         if not hasattr(self, 'player'):
             raise Exception("Player was not assigned to this skill")
 
         self.player.hp[0] -= 1
-        print("run away")
+        return self.player.deal_dmg(dmg_modifiers=[0, 0])
 
 
 class Poop(Skill):
-    name = 'poop'
+    name = 'Poop'
     def __repr__(self):
-        return "Poop"
+        return 'Max damage points + 2'
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -42,7 +42,7 @@ class Poop(Skill):
 class Bomb(Skill):
     name = 'bomb'
     def __repr__(self):
-        return "Bomb"
+        return "Max and min damage points + 3 and you hurt yourself for 3 damage"
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -53,8 +53,9 @@ class Bomb(Skill):
 
 
 class Hide(Skill):
+    name = 'hide'
     def __repr__(self):
-        return "Hide"
+        return "Min hit points + 2"
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -65,8 +66,9 @@ class Hide(Skill):
 
 
 class Tangle(Skill):
+    name = "tangle"
     def __repr__(self):
-        return "Tangle"
+        return "Min damage points + 3"
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -76,8 +78,9 @@ class Tangle(Skill):
 
 
 class Charm(Skill):
+    name = "charm"
     def __repr__(self):
-        return "Charm"
+        return "Max damage points + 2"
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -87,8 +90,9 @@ class Charm(Skill):
 
 
 class Protect(Skill):
+    name="protect"
     def __repr__(self):
-        return "Protect"
+        return "Min hit points + 3"
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -109,22 +113,27 @@ def player_type_choice():
     skills = {"bomb": Bomb(), "poop": Poop(), "run": Run()}
     while True:
         user_input = input(
-            f"what kind of pig do you choose?\n{show_choices(choice_dict)}"
-        ).lower()
+            f"what kind of pig do you choose?"
+            f"\n{show_choices(choice_dict, mode=1)}").lower()
         if user_input in choice_dict:
-            skills["special"] = choice_dict[user_input]
+            special_skill = choice_dict[user_input].name
+            skills[special_skill] = choice_dict[user_input]
             print(
-                f"Your pig is {user_input} with 4 skills:\n"
-                f"{show_choices(skills)}"
+                f"\nYour pig is {user_input} with 4 skills:\n"
+                f"{show_choices(skills, mode=2)}"
             )
             return skills
 
 # Make player choose their skills
 # Not in player class since we show choices before player instance is created
-def show_choices(choice_dict):
+def show_choices(choice_dict, mode):
     result = ''
-    for pig, skill in choice_dict.items():
-        result += f"-- {pig} with skill: {skill}\n"
+    if mode == 1:
+        for pig, skill in choice_dict.items():
+            result += f"-- {pig} with a skill: {skill.name}\n"
+    else:
+        for pig, skill in choice_dict.items():
+            result += f"-- {pig}: {skill}\n"
     return result
 
 
@@ -147,6 +156,8 @@ while True:
         MONSTERS_DICT,
         events=OTHER_EVENTS
     )
+
+    # battle.take_place()
     if not event:
         print(player)
         exit("You won the game!")  # Futureproofing
