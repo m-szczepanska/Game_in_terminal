@@ -41,12 +41,14 @@ class BaseEvent():
 
 
 class Battle(BaseEvent):
-    def __init__(self, description, player, monster, *args, **kwargs):
+
+    def __init__(self, description, player, monster, battle_ongoing=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.description = description
         self.choices = player.skills
         self.player = player
         self.monster = monster
+        self.battle_ongoing = battle_ongoing
 
     def print_skills(self):
         for skill, skill_name in self.player.skills.items():
@@ -60,24 +62,21 @@ class Battle(BaseEvent):
                 return self.choices[user_input]
 
     def basic_fight(self, chosen_skill):
-        # if chosen_skill.name is "run"
-        #     TODO: make this a special case
-        dmg_dealt = chosen_skill()
-        self.monster.take_dmg(dmg_dealt)
-        if self.monster.is_alive():
-            dmg_dealt = self.monster.deal_dmg()
-            self.player.take_dmg(dmg_dealt)
+        if chosen_skill.name == 'Run':
+            print("You ran away")
+            self.battle_ongoing = False
         else:
-            return(self.player.name, "wins the combat")
+            dmg_dealt = chosen_skill()
+            self.monster.take_dmg(dmg_dealt)
+            if self.monster.is_alive():
+                dmg_dealt = self.monster.deal_dmg()
+                self.player.take_dmg(dmg_dealt)
 
     def take_place(self):
         # TODO: Print description just once at the beginning and then print
-        # player skills in get_user_input
-        while self.player.is_alive() and self.monster.is_alive():
+        while self.player.is_alive() and self.monster.is_alive() and self.battle_ongoing:
             chosen_skill = self.get_user_input()
-            print(chosen_skill)
-            if chosen_skill:
-                self.basic_fight(chosen_skill)
+            self.basic_fight(chosen_skill)
         if self.monster.is_alive() == False:
             print("you won the battle")
             self.player.gain_exp(self.monster.exp)
@@ -85,7 +84,6 @@ class Battle(BaseEvent):
             print(
                 "Gained gold:", self.monster.gold, "and exp:", self.monster.gold
             )
-
 
 class EventOther(BaseEvent):
     def __init__(self, description, choices, player, *args, **kwargs):
@@ -146,10 +144,9 @@ def choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS):
     )
     return battle_event
 
-def create_random_event(player, BATTLE_DESCRIPTS, MONSTERS_DICT, events=OTHER_EVENTS):
+def create_random_event(player, BATTLE_DESCRIPTS, MONSTERS_DICT, OTHER_EVENTS):
     battle_or_other_event = random.choice(["Battle", "Other_event"])
-    print(battle_or_other_event, "\n")
-    if battle_or_other_event == "other_event":
+    if battle_or_other_event == "Other_event":
         event = create_other_event(player, events=OTHER_EVENTS)
     else:
         event = choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS)

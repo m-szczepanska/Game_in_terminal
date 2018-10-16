@@ -17,7 +17,7 @@ class Run(Skill):
     name = 'Run'
 
     def __repr__(self):
-        return 'Run away from the battle'
+        return 'Run'
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -40,7 +40,7 @@ class Poop(Skill):
 
 
 class Bomb(Skill):
-    name = 'bomb'
+    name = 'Bomb'
     def __repr__(self):
         return "Max and min damage points + 3 and you hurt yourself for 3 damage"
 
@@ -53,7 +53,7 @@ class Bomb(Skill):
 
 
 class Hide(Skill):
-    name = 'hide'
+    name = 'Hide'
     def __repr__(self):
         return "Min hit points + 2"
 
@@ -66,7 +66,7 @@ class Hide(Skill):
 
 
 class Tangle(Skill):
-    name = "tangle"
+    name = "Tangle"
     def __repr__(self):
         return "Min damage points + 3"
 
@@ -78,7 +78,7 @@ class Tangle(Skill):
 
 
 class Charm(Skill):
-    name = "charm"
+    name = "Charm"
     def __repr__(self):
         return "Max damage points + 2"
 
@@ -90,7 +90,7 @@ class Charm(Skill):
 
 
 class Protect(Skill):
-    name="protect"
+    name="Protect"
     def __repr__(self):
         return "Min hit points + 3"
 
@@ -114,13 +114,13 @@ def player_type_choice():
     while True:
         user_input = input(
             f"what kind of pig do you choose?"
-            f"\n{show_choices(choice_dict, mode=1)}").lower()
+            f"\n{show_choices(choice_dict, mode='create_character')}").lower()
         if user_input in choice_dict:
-            special_skill = choice_dict[user_input].name
+            special_skill = choice_dict[user_input].name.lower()
             skills[special_skill] = choice_dict[user_input]
             print(
                 f"\nYour pig is {user_input} with 4 skills:\n"
-                f"{show_choices(skills, mode=2)}"
+                f"{show_choices(skills, mode='fight')}"
             )
             return skills
 
@@ -128,7 +128,7 @@ def player_type_choice():
 # Not in player class since we show choices before player instance is created
 def show_choices(choice_dict, mode):
     result = ''
-    if mode == 1:
+    if mode == "create_character":
         for pig, skill in choice_dict.items():
             result += f"-- {pig} with a skill: {skill.name}\n"
     else:
@@ -154,10 +154,8 @@ while True:
         player,
         BATTLE_DESCRIPTS,
         MONSTERS_DICT,
-        events=OTHER_EVENTS
+        OTHER_EVENTS
     )
-
-    # battle.take_place()
     if not event:
         print(player)
         exit("You won the game!")  # Futureproofing

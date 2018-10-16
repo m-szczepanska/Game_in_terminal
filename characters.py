@@ -86,7 +86,6 @@ class Player(Character):
             skill.player = self
             setattr(self, skill_name, skill)
 
-
     def gain_exp(self, exp):
         self.exp += exp
         print("You gain {} exp. You have {} exp now.".format(exp, self.exp))
