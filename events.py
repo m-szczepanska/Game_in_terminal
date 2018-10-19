@@ -25,7 +25,7 @@ OTHER_EVENTS = [
 ]
 
 BATTLE_DESCRIPTS = [
-    "Choose a skill to fight: ",
+    "First fight. Choose a skill to fight : ",
     "Gonna fight, choose skill: ",
     "Let your pigge fight: ",
     "Let's go: ",
@@ -41,6 +41,7 @@ class BaseEvent():
 
 
 class Battle(BaseEvent):
+    check_list = []
 
     def __init__(self, description, player, monster, battle_ongoing=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,16 +51,28 @@ class Battle(BaseEvent):
         self.monster = monster
         self.battle_ongoing = battle_ongoing
 
-    def print_skills(self):
+    def first_print_skills_during_battle(self):
+        print(f"Fight's ahead, choose a skill to beat the {self.monster.name}")
         for skill, skill_name in self.player.skills.items():
             print(skill, "--", skill_name)
+        return ">> "
+    def another_print_skills_during_battle(self):
+        print(f"{self.monster.name} is unbeaten yet. Choose skill to fight: ")
+        for skill, skill_name in self.player.skills.items():
+            print(skill, "--", skill_name)
+        return ">> "
 
     def get_user_input(self):
         while True:
-            self.print_skills()
-            user_input = input(self.description).lower()
-            if user_input in self.choices:
-                return self.choices[user_input]
+            if self.monster.name in self.check_list:
+                user_input = input(self.another_print_skills_during_battle()).lower()
+                if user_input in self.choices:
+                    return self.choices[user_input]
+            else:
+                user_input = input(self.first_print_skills_during_battle()).lower()
+                if user_input in self.choices:
+                    self.check_list.append(self.monster.name)
+                    return self.choices[user_input]
 
     def basic_fight(self, chosen_skill):
         if chosen_skill.name == 'Run':

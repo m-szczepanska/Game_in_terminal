@@ -6,9 +6,6 @@ from monsters_list import MONSTERS_DICT
 # TODO: Move skills to another file; they actually were but I hav issues
 # with it so now they're temporarily here.
 class Skill:
-    def __repr__(self):
-        raise NotImplementedError
-
     def __call__(self):
         raise NotImplementedError
 
@@ -16,8 +13,8 @@ class Skill:
 class Run(Skill):
     name = 'Run'
 
-    def __repr__(self):
-        return 'Run'
+    def __str__(self):
+        return 'Run away, get hurt for 1 hp'
 
     def __call__(self):
         if not hasattr(self, 'player'):
@@ -29,7 +26,7 @@ class Run(Skill):
 
 class Poop(Skill):
     name = 'Poop'
-    def __repr__(self):
+    def __str__(self):
         return 'Max damage points + 2'
 
     def __call__(self):
@@ -41,7 +38,7 @@ class Poop(Skill):
 
 class Bomb(Skill):
     name = 'Bomb'
-    def __repr__(self):
+    def __str__(self):
         return "Max and min damage points + 3 and you hurt yourself for 3 damage"
 
     def __call__(self):
@@ -54,7 +51,7 @@ class Bomb(Skill):
 
 class Hide(Skill):
     name = 'Hide'
-    def __repr__(self):
+    def __str__(self):
         return "Min hit points + 2"
 
     def __call__(self):
@@ -67,7 +64,7 @@ class Hide(Skill):
 
 class Tangle(Skill):
     name = "Tangle"
-    def __repr__(self):
+    def __str__(self):
         return "Min damage points + 3"
 
     def __call__(self):
@@ -79,7 +76,7 @@ class Tangle(Skill):
 
 class Charm(Skill):
     name = "Charm"
-    def __repr__(self):
+    def __str__(self):
         return "Max damage points + 2"
 
     def __call__(self):
@@ -91,7 +88,7 @@ class Charm(Skill):
 
 class Protect(Skill):
     name="Protect"
-    def __repr__(self):
+    def __str__(self):
         return "Min hit points + 3"
 
     def __call__(self):
@@ -144,7 +141,7 @@ player_name = "bob"  # hardcoded for ease of testing
 player = Player(
     name = player_name,
     hp=[100, 100],
-    dmg=[5, 20],
+    dmg=[5, 15],
     skills=chosen_skills
 )
 

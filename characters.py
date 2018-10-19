@@ -19,7 +19,7 @@ class Character():
         self.lvl = lvl
         self.items = items or []
 
-    def __repr__(self):
+    def __str__(self):
         return str({
             "Name: {}".format(self.name),
             "Hit Points (hp): {}/{}".format(self.hp[0], self.hp[1]),
