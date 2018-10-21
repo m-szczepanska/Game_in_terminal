@@ -51,19 +51,26 @@ class Character():
         self.hp[0] += hp_modifiers[0]
         self.hp[1] += hp_modifiers[1]
         self.hp[0] -= dmg_taken
-        print("{} takes {} damage and has {}/{} hit points now.".format(
+        print("{} takes {} damage and has {}/{} hit points now.\n".format(
             self.name, dmg_taken, self.hp[0], self.hp[1])
         )
 
     def get_stats(self):
-        return str({
-            "Name: {}".format(self.name),
-            "Hit Points (hp): {}/{}".format(self.hp[0], self.hp[1]),
-            "Damage: {}-{}".format(self.dmg[0], self.dmg[1]),
-            "Experience: {}".format(self.exp),
-            "Gold: {}".format(self.gold),
-            "Level: {}".format(self.lvl)
-        })
+        print(f"Your stats:\n"
+        f"Name: {self.name},\n"
+        f"Hit points: {self.hp[0], self.hp[1]},\n"
+        f"Damage: {self.dmg[0], self.dmg[1]},\n"
+        f"Experience: {self.exp},\n"
+        f"Gold: {self.gold},\n"
+        f"Level: {self.lvl}")
+        # return str({
+        #     "Name: {}".format(self.name),
+        #     "Hit Points (hp): {}/{}".format(self.hp[0], self.hp[1]),
+        #     "Damage: {}-{}".format(self.dmg[0], self.dmg[1]),
+        #     "Experience: {}".format(self.exp),
+        #     "Gold: {}".format(self.gold),
+        #     "Level: {}".format(self.lvl)
+        # })
 
 
 class Player(Character):
@@ -107,4 +114,11 @@ class Player(Character):
 
 
 class Monster(Character):
+
+    #
+    # def skills_scale(self):
+    #     self.dmg[0] = player.dmg[0] - 3
+    #     self.dmg[1] = player.dmg[1] - 3
+    #     self.hp[0] = player.dmg[0] - 5
+    #     self.hp[1] = player.hp[1] - 5
     pass  # TODO: this will be useful later

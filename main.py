@@ -101,17 +101,17 @@ class Protect(Skill):
 
 def player_type_choice():
     choice_dict = { # dict with piggies to choose
-        "aguti": Hide(),
-        "long-haired": Tangle(),
-        "skinny": Charm(),
-        "wire-haired": Protect()
+        "Aguti": Hide(),
+        "Long-haired": Tangle(),
+        "Skinny": Charm(),
+        "Wire-haired": Protect()
     }
     # basic skills for every pig
     skills = {"bomb": Bomb(), "poop": Poop(), "run": Run()}
     while True:
         user_input = input(
-            f"what kind of pig do you choose?"
-            f"\n{show_choices(choice_dict, mode='create_character')}").lower()
+            f"What kind of pig do you choose?"
+            f"\n{show_choices(choice_dict, mode='create_character')}").lower().capitalize()
         if user_input in choice_dict:
             special_skill = choice_dict[user_input].name.lower()
             skills[special_skill] = choice_dict[user_input]
@@ -134,26 +134,34 @@ def show_choices(choice_dict, mode):
     return result
 
 
+player_name = input("What is your name? \n>> ")
+print(f"Yo {player_name}! \n")
+
 chosen_skills = player_type_choice()
 
 # Create player
-player_name = "bob"  # hardcoded for ease of testing
 player = Player(
     name = player_name,
-    hp=[100, 100],
+    hp=[30, 30],
     dmg=[5, 15],
     skills=chosen_skills
 )
 
 # Play game
 while True:
-    event = create_random_event(
-        player,
-        BATTLE_DESCRIPTS,
-        MONSTERS_DICT,
-        OTHER_EVENTS
-    )
-    if not event:
-        print(player)
-        exit("You won the game!")  # Futureproofing
-    event.take_place()
+    play_or_stats = input("If you want check your stats type 'stats'. \
+Otherwise type 'play'\n>> ")
+    if play_or_stats.lower() == "stats":
+        player.get_stats()
+        print(MONSTERS_DICT)
+    elif play_or_stats.lower() == "play":
+        event = create_random_event(
+            player,
+            BATTLE_DESCRIPTS,
+            MONSTERS_DICT,
+            OTHER_EVENTS
+        )
+        if not event:
+            player.get_stats()
+            exit("You won the game!")  # Futureproofing
+        event.take_place()

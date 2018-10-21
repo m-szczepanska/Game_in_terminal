@@ -5,23 +5,27 @@ from monsters_list import MONSTERS_DICT
 
 OTHER_EVENTS = [
     {
-        "description": "Other event 1, choose 1 ",
-        "choices": {"1": True, "2": False},
+        "description": "You meet a rabbit called Fred. He wants to treat you "
+            "a cabbage. Do you eat it?",
+        "choices": {"yes": True, "no": False},
         "exp": 1,
-        "gold": 1
+        "gold": 1,
+        "exclamation": "Cabbage is tasty, but it causes farts\n"
     },
-    {
-        "description": "Other event 2, choose 1 ",
-        "choices": {"1": True, "2": False},
-        "exp": 3,
-        "gold": 4
-    },
-    {
-        "description": "Other event 3, choose 1 ",
-        "choices": {"1": True, "2": False},
-        "exp": 5,
-        "gold": 9
-    }
+    # {
+    #     "description": "Other event 2, choose 1 ",
+    #     "choices": {"1": True, "2": False},
+    #     "exp": 3,
+    #     "gold": 4,
+    #     "exclamation": "You shouldn't eat a cabbage, it causes farts \n"
+    # },
+    # {
+    #     "description": "Other event 3, choose 1 ",
+    #     "choices": {"1": True, "2": False},
+    #     "exp": 5,
+    #     "gold": 9,
+    #     "exclamation": "You shouldn't eat a cabbage, it causes farts \n"
+    # }
 ]
 
 BATTLE_DESCRIPTS = [
@@ -52,7 +56,7 @@ class Battle(BaseEvent):
         self.battle_ongoing = battle_ongoing
 
     def first_print_skills_during_battle(self):
-        print(f"Fight's ahead, choose a skill to beat the {self.monster.name}")
+        print(f"Fight's ahead, choose a skill to beat the {self.monster.name}:")
         for skill, skill_name in self.player.skills.items():
             print(skill, "--", skill_name)
         return ">> "
@@ -74,10 +78,12 @@ class Battle(BaseEvent):
                     self.check_list.append(self.monster.name)
                     return self.choices[user_input]
 
-    def basic_fight(self, chosen_skill):
+    def basic_fight(self, chosen_skill, MONSTERS_DICT):
         if chosen_skill.name == 'Run':
             print("You ran away")
+            MONSTERS_DICT.append(MONSTERS_DICT[0])
             self.battle_ongoing = False
+            MONSTERS_DICT.pop(0)
         else:
             dmg_dealt = chosen_skill()
             self.monster.take_dmg(dmg_dealt)
@@ -89,26 +95,31 @@ class Battle(BaseEvent):
         # TODO: Print description just once at the beginning and then print
         while self.player.is_alive() and self.monster.is_alive() and self.battle_ongoing:
             chosen_skill = self.get_user_input()
-            self.basic_fight(chosen_skill)
+            self.basic_fight(chosen_skill, MONSTERS_DICT)
         if self.monster.is_alive() == False:
+            MONSTERS_DICT.pop(0)
             print("you won the battle")
-            self.player.gain_exp(self.monster.exp)
             self.player.gold += self.monster.gold
+            self.player.gain_exp(self.monster.exp)
             print(
-                "Gained gold:", self.monster.gold, "and exp:", self.monster.gold
+                "Gained gold:", self.monster.gold, "and exp:", self.monster.exp
             )
+        elif self.player.is_alive() == False:
+            exit("You lost the game!")
 
 class EventOther(BaseEvent):
-    def __init__(self, description, choices, player, *args, **kwargs):
+    def __init__(self, description, choices, player, exclamation, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.description = description
         self.choices = choices
         self.player = player
+        self.exclamation = exclamation
 
     def get_user_input(self):
         while True:
             user_input = input(self.description).lower()
             if user_input in self.choices:
+                print(self.exclamation)
                 return self.choices[user_input]
 
     def take_place(self):
@@ -124,12 +135,14 @@ def create_other_event(player, events=OTHER_EVENTS):
         return None
     random_num = random.randint(0, (len(events)-1))
     random_dict = events[random_num]
+    events.pop(random_num)
     random_event = EventOther(
         description=random_dict["description"],
         choices= random_dict["choices"],
         player=player,
         exp=random_dict["exp"],
-        gold=random_dict["gold"]
+        gold=random_dict["gold"],
+        exclamation=random_dict["exclamation"]
     )
     return random_event
 
@@ -139,9 +152,8 @@ def choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS):
     # random_num = random.randint(0, (len(MONSTERS_DICT)-1))
     chosen_monster = MONSTERS_DICT[0]
     # random_monster = MONSTERS_DICT[random_num]
-    MONSTERS_DICT.pop(0)
+    random.shuffle(BATTLE_DESCRIPTS)
     chosen_descript = BATTLE_DESCRIPTS[0]
-    BATTLE_DESCRIPTS.pop(0)
     battle_event = Battle(
         chosen_descript,
         player=player,
@@ -158,9 +170,16 @@ def choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS):
     return battle_event
 
 def create_random_event(player, BATTLE_DESCRIPTS, MONSTERS_DICT, OTHER_EVENTS):
-    battle_or_other_event = random.choice(["Battle", "Other_event"])
-    if battle_or_other_event == "Other_event":
-        event = create_other_event(player, events=OTHER_EVENTS)
-    else:
+    event = None
+    if MONSTERS_DICT and OTHER_EVENTS:
+        battle_or_other_event = random.choice(["Battle", "Other_event"])
+        print("RANDOMLY")
+        if battle_or_other_event == "Other_event":
+            event = create_other_event(player, events=OTHER_EVENTS)
+        else:
+            event = choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS)
+    elif not OTHER_EVENTS:
         event = choose_battle(player, MONSTERS_DICT, BATTLE_DESCRIPTS)
+    elif not MONSTERS_DICT:
+        event = create_other_event(player, events=OTHER_EVENTS)
     return event

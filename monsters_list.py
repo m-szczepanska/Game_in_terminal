@@ -20,19 +20,21 @@ MONSTERS_DICT = [
         "exp": 6,
         "damage": [13, 13],
         "gold": 20
-        },
-
-        {"name": "Birthing Hulk",
-        "hp": [25, 25],
-        "exp": 10,
-        "damage": [15, 15],
-        "gold": 30
-        },
-
-        {"name": "Pathrazer of Ulamog",
-        "hp": [30, 30],
-        "exp": 15,
-        "damage": [20, 20],
-        "gold": 50
         }
+
+        # {"name": "Birthing Hulk",
+        # "hp": [25, 25],
+        # "exp": 10,
+        # "damage": [15, 15],
+        # "gold": 30
+        # },
+        #
+        # {"name": "Pathrazer of Ulamog",
+        # "hp": [30, 30],
+        # "exp": 15,
+        # "damage": [20, 20],
+        # "gold": 40
+        # }
 ]
+
+MONSTERS_LEFT = []
